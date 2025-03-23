@@ -1,15 +1,20 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Search, MapPin, Calendar, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { format } from 'date-fns';
 
 interface HeroProps {
   className?: string;
 }
 
 const Hero: React.FC<HeroProps> = ({ className }) => {
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  
   return (
     <div className={cn(
       "relative min-h-[90vh] flex items-center justify-center overflow-hidden",
@@ -46,51 +51,67 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
             Buy, sell or rent timeshares at the best prices on the marketplace trusted by millions.
           </p>
           
-          {/* Search Form */}
-          <div className="max-w-4xl mx-auto backdrop-blur-md rounded-2xl p-1 bg-white/10 shadow-2xl animate-fade-up overflow-hidden" style={{ animationDelay: "0.2s" }}>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400" size={20} />
-                  <Input 
-                    className="pl-10 h-14 text-base rounded-xl border-0 bg-white/80 backdrop-blur-sm focus-visible:ring-2 ring-blue-400 shadow-none text-gray-800 placeholder:text-gray-500" 
-                    placeholder="Destination" 
-                  />
-                </div>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400" size={20} />
-                  <Input 
-                    className="pl-10 h-14 text-base rounded-xl border-0 bg-white/80 backdrop-blur-sm focus-visible:ring-2 ring-blue-400 shadow-none text-gray-800 placeholder:text-gray-500" 
-                    placeholder="Check in" 
-                    type="date"
-                  />
-                </div>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-400" size={20} />
-                  <Input 
-                    className="pl-10 h-14 text-base rounded-xl border-0 bg-white/80 backdrop-blur-sm focus-visible:ring-2 ring-blue-400 shadow-none text-gray-800 placeholder:text-gray-500" 
-                    placeholder="Guests" 
-                    type="number"
-                    min="1"
-                  />
-                </div>
-                <Button
-                  size="lg"
-                  className="w-full h-14 px-8 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all text-lg"
-                >
-                  <Search className="mr-2 h-5 w-5" />
-                  Search
-                </Button>
+          {/* Search Form - Updated to match the provided image */}
+          <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-2xl animate-fade-up" style={{ animationDelay: "0.2s" }}>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+              <div className="relative">
+                <Input 
+                  className="pl-10 h-14 text-base rounded-full border-0 bg-white/90 focus-visible:ring-1 ring-blue-400 shadow-sm text-gray-800 placeholder:text-gray-500" 
+                  placeholder="Destination" 
+                />
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               </div>
+              
+              <Popover>
+                <PopoverTrigger asChild>
+                  <div className="relative cursor-pointer">
+                    <Input 
+                      className="pl-10 h-14 text-base rounded-full border-0 bg-white/90 focus-visible:ring-1 ring-blue-400 shadow-sm text-gray-800 placeholder:text-gray-500" 
+                      placeholder="mm/dd/yyyy" 
+                      value={date ? format(date, 'MM/dd/yyyy') : ''}
+                      readOnly
+                    />
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                  </div>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+              
+              <div className="relative">
+                <Input 
+                  className="pl-10 h-14 text-base rounded-full border-0 bg-white/90 focus-visible:ring-1 ring-blue-400 shadow-sm text-gray-800 placeholder:text-gray-500" 
+                  placeholder="Guests" 
+                  type="number"
+                  min="1"
+                />
+                <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+              </div>
+              
+              <Button
+                size="lg"
+                className="h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all text-lg font-medium"
+              >
+                <Search className="mr-2 h-5 w-5" />
+                Search
+              </Button>
             </div>
           </div>
           
-          <div className="mt-10 flex flex-wrap justify-center gap-5">
+          {/* Search tags buttons */}
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
             {['For Sale', 'For Rent', 'New Listings', 'Popular'].map((tag, index) => (
               <Button 
                 key={index}
                 variant="outline" 
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/30 rounded-full px-6 animate-fade-up"
+                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/30 rounded-full px-8 py-6 text-base font-medium animate-fade-up"
                 style={{ animationDelay: `${0.3 + index * 0.1}s` }}
               >
                 {tag}
