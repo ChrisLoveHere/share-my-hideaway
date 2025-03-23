@@ -1,5 +1,6 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,7 +19,48 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 
 const SearchFilters = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [filtersExpanded, setFiltersExpanded] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [bedrooms, setBedrooms] = useState('');
+  
+  // Load initial values from URL parameters
+  useEffect(() => {
+    const location = searchParams.get('location') || '';
+    setSearchTerm(location);
+    
+    const price = searchParams.get('maxPrice') || '';
+    setMaxPrice(price);
+    
+    const beds = searchParams.get('bedrooms') || '';
+    setBedrooms(beds);
+  }, [searchParams]);
+  
+  const handleSearch = () => {
+    const newParams = new URLSearchParams(searchParams);
+    
+    // Update or remove search parameters
+    if (searchTerm) {
+      newParams.set('location', searchTerm);
+    } else {
+      newParams.delete('location');
+    }
+    
+    if (maxPrice) {
+      newParams.set('maxPrice', maxPrice);
+    } else {
+      newParams.delete('maxPrice');
+    }
+    
+    if (bedrooms) {
+      newParams.set('bedrooms', bedrooms);
+    } else {
+      newParams.delete('bedrooms');
+    }
+    
+    setSearchParams(newParams);
+  };
   
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-subtle p-4">
@@ -29,12 +71,14 @@ const SearchFilters = () => {
             <Input 
               placeholder="Search resorts, locations, keywords" 
               className="pl-10 h-12 border-gray-200 focus:border-blue-400 focus:ring-blue-400"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4">
-          <Select>
+          <Select value={maxPrice} onValueChange={setMaxPrice}>
             <SelectTrigger className="w-full sm:w-[180px] h-12">
               <SelectValue placeholder="Max Price" />
             </SelectTrigger>
@@ -49,7 +93,7 @@ const SearchFilters = () => {
             </SelectContent>
           </Select>
 
-          <Select>
+          <Select value={bedrooms} onValueChange={setBedrooms}>
             <SelectTrigger className="w-full sm:w-[180px] h-12">
               <SelectValue placeholder="Bedrooms" />
             </SelectTrigger>
@@ -64,9 +108,7 @@ const SearchFilters = () => {
 
           <Button 
             className="h-12 bg-blue-600 hover:bg-blue-700"
-            onClick={() => {
-              console.log("Searching...");
-            }}
+            onClick={handleSearch}
           >
             Search
           </Button>

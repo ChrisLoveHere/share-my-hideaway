@@ -7,13 +7,35 @@ import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 
 interface HeroProps {
   className?: string;
 }
 
 const Hero: React.FC<HeroProps> = ({ className }) => {
+  const navigate = useNavigate();
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const [destination, setDestination] = useState<string>('');
+  const [guests, setGuests] = useState<string>('1');
+  
+  const handleSearch = () => {
+    const searchParams = new URLSearchParams();
+    
+    if (destination) {
+      searchParams.append('location', destination);
+    }
+    
+    if (date) {
+      searchParams.append('date', format(date, 'yyyy-MM-dd'));
+    }
+    
+    if (guests) {
+      searchParams.append('guests', guests);
+    }
+    
+    navigate(`/search?${searchParams.toString()}`);
+  };
   
   return (
     <div className={cn(
@@ -51,13 +73,15 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
             Buy, sell or rent timeshares at the best prices on the marketplace trusted by millions.
           </p>
           
-          {/* Search Form - Updated to match the provided image */}
+          {/* Search Form - Updated to make it functional */}
           <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-2xl animate-fade-up" style={{ animationDelay: "0.2s" }}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <div className="relative">
                 <Input 
                   className="pl-10 h-14 text-base rounded-full border-0 bg-white/90 focus-visible:ring-1 ring-blue-400 shadow-sm text-gray-800 placeholder:text-gray-500" 
                   placeholder="Destination" 
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
                 />
                 <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               </div>
@@ -91,6 +115,8 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
                   placeholder="Guests" 
                   type="number"
                   min="1"
+                  value={guests}
+                  onChange={(e) => setGuests(e.target.value)}
                 />
                 <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               </div>
@@ -98,6 +124,7 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
               <Button
                 size="lg"
                 className="h-14 rounded-full bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all text-lg font-medium"
+                onClick={handleSearch}
               >
                 <Search className="mr-2 h-5 w-5" />
                 Search
@@ -113,6 +140,7 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
                 variant="outline" 
                 className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/30 rounded-full px-8 py-6 text-base font-medium animate-fade-up"
                 style={{ animationDelay: `${0.3 + index * 0.1}s` }}
+                onClick={() => navigate(`/search?tag=${tag.toLowerCase().replace(' ', '-')}`)}
               >
                 {tag}
               </Button>

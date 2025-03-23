@@ -268,6 +268,12 @@ const Search = () => {
   const [currentView, setCurrentView] = useState<'sale' | 'rent'>('sale');
   
   const location = searchParams.get('location') || '';
+  const maxPrice = searchParams.get('maxPrice') || '';
+  const bedrooms = searchParams.get('bedrooms') || '';
+  const guests = searchParams.get('guests') || '';
+  const date = searchParams.get('date') || '';
+  const tag = searchParams.get('tag') || '';
+  
   const currentDestination = Object.keys(destinationInfo).find(dest => 
     location.toLowerCase().includes(dest.toLowerCase())
   );
@@ -286,8 +292,59 @@ const Search = () => {
       );
     }
     
+    if (maxPrice) {
+      const price = parseInt(maxPrice);
+      filtered = filtered.filter(property => 
+        currentView === 'sale' 
+          ? property.price <= price
+          : (property.rentalPrice || 0) <= price
+      );
+    }
+    
+    if (bedrooms && bedrooms !== 'studio') {
+      if (bedrooms === '4+') {
+        filtered = filtered.filter(property => property.bedrooms >= 4);
+      } else {
+        const beds = parseInt(bedrooms);
+        filtered = filtered.filter(property => property.bedrooms === beds);
+      }
+    } else if (bedrooms === 'studio') {
+      filtered = filtered.filter(property => property.bedrooms === 0 || property.bedrooms === 1);
+    }
+    
+    if (guests) {
+      const guestCount = parseInt(guests);
+      filtered = filtered.filter(property => property.sleeps >= guestCount);
+    }
+    
+    if (tag) {
+      // Handle tag-based filtering
+      switch(tag) {
+        case 'for-sale':
+          setCurrentView('sale');
+          break;
+        case 'for-rent':
+          setCurrentView('rent');
+          break;
+        case 'new-listings':
+          // Sort by newest first
+          filtered.sort((a, b) => 
+            new Date(b.resort.id).getTime() - new Date(a.resort.id).getTime()
+          );
+          break;
+        case 'popular':
+          // Sort by highest rating
+          filtered.sort((a, b) => 
+            (b.resort.rating || 0) - (a.resort.rating || 0)
+          );
+          break;
+        default:
+          break;
+      }
+    }
+    
     setFilteredProperties(filtered);
-  }, [location, properties]);
+  }, [location, maxPrice, bedrooms, guests, tag, properties, currentView]);
   
   return (
     <div className="min-h-screen bg-gray-50">
