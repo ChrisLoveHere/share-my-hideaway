@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, User } from 'lucide-react';
+import { Menu, X, ChevronDown, User, Home, Search, Building, BookOpen, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,6 +10,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from '@/components/ui/navigation-menu';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 import Logo from '@/components/Logo';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -17,6 +28,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const Navbar = () => {
   const isMobile = useIsMobile();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { user, signOut } = useAuth();
 
@@ -24,72 +36,141 @@ const Navbar = () => {
     setIsMenuOpen(false);
   }, [location]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+    <header 
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        isScrolled 
+          ? "bg-white/90 backdrop-blur-md shadow-md border-b border-gray-100"
+          : "bg-gradient-to-r from-blue-900/20 via-blue-800/10 to-teal-900/20 backdrop-blur-sm border-b border-white/10"
+      )}
+    >
       <div className="container mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 md:h-20">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
-              <Logo className="h-8 w-auto" />
+            <Link to="/" className="group flex items-center">
+              <div className="bg-gradient-to-r from-blue-600 to-teal-600 rounded-full h-10 w-10 flex items-center justify-center mr-2 transition-transform group-hover:scale-110">
+                <span className="text-white font-bold text-lg">ST</span>
+              </div>
+              <Logo className={cn(
+                "h-8 w-auto transition-colors",
+                isScrolled ? "text-blue-600" : "text-white"
+              )} />
             </Link>
           </div>
 
-          <nav className={`${isMobile ? 'hidden' : 'flex'} ml-10 space-x-8`}>
-            <Link
-              to="/"
-              className="text-gray-600 hover:text-blue-600 transition-colors px-1 py-2"
-            >
-              Home
-            </Link>
-            <Link
-              to="/search"
-              className="text-gray-600 hover:text-blue-600 transition-colors px-1 py-2"
-            >
-              Buy
-            </Link>
-            <Link
-              to="/search?type=rent"
-              className="text-gray-600 hover:text-blue-600 transition-colors px-1 py-2"
-            >
-              Rent
-            </Link>
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center text-gray-600 hover:text-blue-600 transition-colors px-1 py-2 cursor-pointer">
-                Resources
-                <ChevronDown size={16} className="ml-1" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48">
-                <DropdownMenuItem>
-                  <Link to="/resources/guide" className="w-full">
-                    Timeshare Guide
+          {!isMobile && (
+            <NavigationMenu className="mx-6 hidden md:flex">
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <Link to="/">
+                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                      <Home size={16} className="mr-2" />
+                      Home
+                    </NavigationMenuLink>
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Link to="/resources/faqs" className="w-full">
-                    FAQs
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link to="/search">
+                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                      <Search size={16} className="mr-2" />
+                      Buy
+                    </NavigationMenuLink>
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Link to="/blog" className="w-full">
-                    Blog
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link to="/search?type=rent">
+                    <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                      <Building size={16} className="mr-2" />
+                      Rent
+                    </NavigationMenuLink>
                   </Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </nav>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>
+                    <BookOpen size={16} className="mr-2" />
+                    Resources
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid gap-3 p-4 w-[400px]">
+                      <div className="col-span-4">
+                        <h4 className="text-sm font-medium leading-none mb-3 text-blue-600">Resources</h4>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Learn more about timeshares and our marketplace
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <NavigationMenuLink asChild>
+                          <Link to="/resources/guide" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            <div className="text-sm font-medium leading-none">Timeshare Guide</div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Learn everything you need to know about timeshares
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                        <NavigationMenuLink asChild>
+                          <Link to="/resources/faqs" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            <div className="text-sm font-medium leading-none">FAQs</div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Most common questions answered
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                        <NavigationMenuLink asChild>
+                          <Link to="/blog" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                            <div className="text-sm font-medium leading-none">Blog</div>
+                            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                              Latest news and tips on timeshare ownership
+                            </p>
+                          </Link>
+                        </NavigationMenuLink>
+                        <Link to="/search" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors bg-gradient-to-r from-blue-100 to-teal-100 hover:from-blue-200 hover:to-teal-200">
+                          <div className="text-sm font-medium leading-none">Popular Destinations</div>
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            <Badge variant="success" className="text-[10px]">Hawaii</Badge>
+                            <Badge variant="info" className="text-[10px]">Florida</Badge>
+                            <Badge variant="warning" className="text-[10px]">Bahamas</Badge>
+                          </div>
+                        </Link>
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+                {user && (
+                  <NavigationMenuItem>
+                    <Link to="/messages">
+                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                        <MessageSquare size={16} className="mr-2" />
+                        Messages
+                        <Badge variant="success" className="ml-2 h-5 text-[10px]">3</Badge>
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                )}
+              </NavigationMenuList>
+            </NavigationMenu>
+          )}
 
           <div className={`${isMobile ? 'hidden' : 'flex'} items-center space-x-4`}>
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="rounded-full">
-                    <User size={16} className="mr-2" />
-                    <span className="hidden sm:inline">My Account</span>
+                  <Button variant="outline" size="sm" className="rounded-full bg-gradient-to-r from-blue-50 to-teal-50 border-blue-200 hover:from-blue-100 hover:to-teal-100">
+                    <User size={16} className="mr-2 text-blue-600" />
+                    <span className="hidden sm:inline text-blue-700">My Account</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -109,11 +190,18 @@ const Navbar = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild variant="outline" size="sm">
-                <Link to="/auth">Sign In</Link>
+              <Button asChild variant="outline" size="sm" className="rounded-full bg-gradient-to-r from-blue-50 to-teal-50 border-blue-200 hover:from-blue-100 hover:to-teal-100">
+                <Link to="/auth">
+                  <User size={16} className="mr-2 text-blue-600" />
+                  <span className="text-blue-700">Sign In</span>
+                </Link>
               </Button>
             )}
-            <Button asChild className="bg-blue-600 hover:bg-blue-700" size="sm">
+            <Button 
+              asChild 
+              size="sm" 
+              className="rounded-full bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 shadow-md hover:shadow-lg transition-all"
+            >
               <Link to={user ? "/sell" : "/auth"}>
                 Sell My Timeshare
               </Link>
@@ -121,7 +209,7 @@ const Navbar = () => {
           </div>
 
           <button
-            className={`${isMobile ? 'flex' : 'hidden'} items-center`}
+            className={`${isMobile ? 'flex' : 'hidden'} items-center ${isScrolled ? 'text-gray-800' : 'text-white'}`}
             onClick={toggleMenu}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -129,71 +217,86 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu with enhanced styling */}
       {isMobile && isMenuOpen && (
-        <div className="px-4 py-2 pb-4 bg-white border-t border-gray-200">
+        <div className="px-4 py-2 pb-4 bg-gradient-to-b from-white to-blue-50 border-t border-gray-200 shadow-lg animate-in fade-in slide-in-from-top-5 duration-300">
           <nav className="flex flex-col space-y-2">
             <Link
               to="/"
-              className="text-gray-600 hover:text-blue-600 transition-colors py-2"
+              className="flex items-center text-blue-600 hover:text-blue-800 transition-colors py-3 border-b border-blue-100"
             >
+              <Home size={18} className="mr-2" />
               Home
             </Link>
             <Link
               to="/search"
-              className="text-gray-600 hover:text-blue-600 transition-colors py-2"
+              className="flex items-center text-blue-600 hover:text-blue-800 transition-colors py-3 border-b border-blue-100"
             >
+              <Search size={18} className="mr-2" />
               Buy
             </Link>
             <Link
               to="/search?type=rent"
-              className="text-gray-600 hover:text-blue-600 transition-colors py-2"
+              className="flex items-center text-blue-600 hover:text-blue-800 transition-colors py-3 border-b border-blue-100"
             >
+              <Building size={18} className="mr-2" />
               Rent
             </Link>
-            <Link
-              to="/resources/guide"
-              className="text-gray-600 hover:text-blue-600 transition-colors py-2"
-            >
-              Timeshare Guide
-            </Link>
-            <Link
-              to="/resources/faqs"
-              className="text-gray-600 hover:text-blue-600 transition-colors py-2"
-            >
-              FAQs
-            </Link>
-            <Link
-              to="/blog"
-              className="text-gray-600 hover:text-blue-600 transition-colors py-2"
-            >
-              Blog
-            </Link>
+            
+            <div className="py-3 border-b border-blue-100">
+              <h3 className="font-medium text-blue-800 mb-2 flex items-center">
+                <BookOpen size={18} className="mr-2" />
+                Resources
+              </h3>
+              <div className="ml-6 space-y-2">
+                <Link
+                  to="/resources/guide"
+                  className="block text-blue-600 hover:text-blue-800 transition-colors py-1"
+                >
+                  Timeshare Guide
+                </Link>
+                <Link
+                  to="/resources/faqs"
+                  className="block text-blue-600 hover:text-blue-800 transition-colors py-1"
+                >
+                  FAQs
+                </Link>
+                <Link
+                  to="/blog"
+                  className="block text-blue-600 hover:text-blue-800 transition-colors py-1"
+                >
+                  Blog
+                </Link>
+              </div>
+            </div>
             
             <div className="pt-2 border-t border-gray-200 flex flex-col space-y-2">
               {user ? (
                 <>
                   <Link
                     to="/profile"
-                    className="text-gray-600 hover:text-blue-600 transition-colors py-2"
+                    className="flex items-center text-blue-600 hover:text-blue-800 transition-colors py-2"
                   >
+                    <User size={18} className="mr-2" />
                     My Profile
                   </Link>
                   <Link
                     to="/my-listings"
-                    className="text-gray-600 hover:text-blue-600 transition-colors py-2"
+                    className="text-blue-600 hover:text-blue-800 transition-colors py-2"
                   >
                     My Listings
                   </Link>
                   <Link
                     to="/messages"
-                    className="text-gray-600 hover:text-blue-600 transition-colors py-2"
+                    className="flex items-center text-blue-600 hover:text-blue-800 transition-colors py-2"
                   >
+                    <MessageSquare size={18} className="mr-2" />
                     Messages
+                    <Badge variant="success" className="ml-2 h-5 text-[10px]">3</Badge>
                   </Link>
                   <button
                     onClick={signOut}
-                    className="text-left text-gray-600 hover:text-blue-600 transition-colors py-2"
+                    className="text-left text-red-600 hover:text-red-800 transition-colors py-2"
                   >
                     Sign Out
                   </button>
@@ -201,12 +304,16 @@ const Navbar = () => {
               ) : (
                 <Link
                   to="/auth"
-                  className="text-gray-600 hover:text-blue-600 transition-colors py-2"
+                  className="flex items-center text-blue-600 hover:text-blue-800 transition-colors py-2"
                 >
+                  <User size={18} className="mr-2" />
                   Sign In / Register
                 </Link>
               )}
-              <Button asChild className="bg-blue-600 hover:bg-blue-700 w-full mt-2">
+              <Button 
+                asChild 
+                className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 w-full mt-2 shadow-md"
+              >
                 <Link to={user ? "/sell" : "/auth"}>
                   Sell My Timeshare
                 </Link>
