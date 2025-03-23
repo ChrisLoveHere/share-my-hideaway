@@ -228,6 +228,39 @@ const mockProperties: TimeshareProperty[] = [
   }
 ];
 
+// Destination information with descriptions to display based on location
+const destinationInfo: Record<string, { 
+  title: string; 
+  description: string;
+  image: string;
+  highlights: string[];
+}> = {
+  "Orlando, Florida": {
+    title: "Orlando, Florida Timeshares",
+    description: "Orlando is home to more than a dozen theme parks. Leading the way is Walt Disney World, comprised of parks like the Magic Kingdom and Epcot, plus water parks. Another major attraction is Universal Orlando, which includes Universal Studios Florida and the Wizarding World of Harry Potter. Perfect for family vacations, Orlando's timeshare resorts offer spacious accommodations and amenities.",
+    image: "https://images.unsplash.com/photo-1575089976121-8ed7b2a54265?auto=format&fit=crop&q=80&w=1000",
+    highlights: ["Close to Disney World", "Family-friendly resorts", "Year-round warm weather", "Amazing golf courses"]
+  },
+  "Las Vegas, Nevada": {
+    title: "Las Vegas, Nevada Timeshares",
+    description: "Las Vegas is a resort city known primarily for its casinos, shopping, fine dining, entertainment, and nightlife. The Las Vegas Strip is lined with elaborate themed hotels and is the focal point of the city's vibrant nightlife. Timeshare resorts in Las Vegas offer luxury accommodations near all the excitement while providing a relaxing retreat.",
+    image: "https://images.unsplash.com/photo-1605833556294-ea5c7a74f57d?auto=format&fit=crop&q=80&w=1000",
+    highlights: ["World-class entertainment", "Luxury casino resorts", "Excellent dining options", "Desert adventures nearby"]
+  },
+  "Maui, Hawaii": {
+    title: "Maui, Hawaii Timeshares",
+    description: "Maui is known for its stunning natural beauty, from the sacred Iao Valley to beaches with golden, red, and black sand. Sunrise and sunset from Haleakala are legendary, while the Road to Hana takes travelers through rainforests and past waterfalls. Maui timeshare resorts offer breathtaking ocean views and authentic Hawaiian hospitality.",
+    image: "https://images.unsplash.com/photo-1542259009477-d625272157b7?auto=format&fit=crop&q=80&w=1000",
+    highlights: ["Beautiful beaches", "World-class snorkeling", "Whale watching (seasonal)", "Stunning sunsets"]
+  },
+  "Cancun, Mexico": {
+    title: "Cancun, Mexico Timeshares",
+    description: "Cancun is a world-renowned vacation destination on Mexico's Yucatan Peninsula known for its white sand beaches and turquoise waters. The Hotel Zone is home to nightclubs, global restaurants, and high-end resorts. Timeshare properties in Cancun offer all-inclusive options and easy access to both modern amenities and ancient Mayan ruins nearby.",
+    image: "https://images.unsplash.com/photo-1682553064441-b3e0ef0444a9?auto=format&fit=crop&q=80&w=1000",
+    highlights: ["All-inclusive resorts", "Caribbean beaches", "Mayan ruins nearby", "Water activities & excursions"]
+  }
+};
+
 const Search = () => {
   const [searchParams] = useSearchParams();
   const [properties, setProperties] = useState<TimeshareProperty[]>(mockProperties);
@@ -235,6 +268,13 @@ const Search = () => {
   const [currentView, setCurrentView] = useState<'sale' | 'rent'>('sale');
   
   const location = searchParams.get('location') || '';
+  const currentDestination = Object.keys(destinationInfo).find(dest => 
+    location.toLowerCase().includes(dest.toLowerCase())
+  );
+  
+  const destinationData = currentDestination 
+    ? destinationInfo[currentDestination] 
+    : null;
   
   useEffect(() => {
     // Filter properties based on search parameters
@@ -256,7 +296,7 @@ const Search = () => {
       <div className="pt-24 pb-16 bg-blue-600">
         <div className="container mx-auto px-4 md:px-6">
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            {location 
+            {destinationData ? destinationData.title : location 
               ? `Timeshares in ${location}` 
               : 'Search Timeshares for Sale and Rent'}
           </h1>
@@ -265,11 +305,44 @@ const Search = () => {
         </div>
       </div>
       
+      {destinationData && (
+        <div className="bg-white py-10 border-b">
+          <div className="container mx-auto px-4 md:px-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+              <div>
+                <h2 className="text-2xl font-semibold mb-4">About {currentDestination}</h2>
+                <p className="text-gray-600 mb-6">{destinationData.description}</p>
+                
+                <div className="space-y-2">
+                  <h3 className="font-medium">Highlights:</h3>
+                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {destinationData.highlights.map((highlight, index) => (
+                      <li key={index} className="flex items-center text-gray-700">
+                        <span className="h-2 w-2 rounded-full bg-blue-500 mr-2"></span>
+                        {highlight}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <div className="rounded-lg overflow-hidden shadow-md">
+                <img 
+                  src={destinationData.image} 
+                  alt={currentDestination} 
+                  className="w-full h-64 md:h-80 object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       <div className="container mx-auto px-4 md:px-6 py-8">
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between">
           <div className="mb-4 sm:mb-0">
             <p className="text-gray-600">
               {filteredProperties.length} {filteredProperties.length === 1 ? 'property' : 'properties'} found
+              {location ? ` in ${location}` : ''}
             </p>
           </div>
           

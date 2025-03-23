@@ -6,6 +6,14 @@ import Logo from './Logo';
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   
+  // Create more descriptive search links with proper URL encoding
+  const destinationLinks = [
+    { name: 'Orlando, Florida', url: '/search?location=Orlando%2C%20Florida' },
+    { name: 'Las Vegas, Nevada', url: '/search?location=Las%20Vegas%2C%20Nevada' },
+    { name: 'Maui, Hawaii', url: '/search?location=Maui%2C%20Hawaii' },
+    { name: 'Cancun, Mexico', url: '/search?location=Cancun%2C%20Mexico' }
+  ];
+  
   return (
     <footer className="bg-gray-50 pt-16 pb-8">
       <div className="container mx-auto px-4 md:px-6">
@@ -63,26 +71,16 @@ const Footer = () => {
           <div>
             <h3 className="font-display font-medium text-lg mb-4">Popular Destinations</h3>
             <ul className="space-y-3">
-              <li>
-                <Link to="/search?location=Orlando" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  Orlando, Florida
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?location=Las-Vegas" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  Las Vegas, Nevada
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?location=Maui" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  Maui, Hawaii
-                </Link>
-              </li>
-              <li>
-                <Link to="/search?location=Cancun" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  Cancun, Mexico
-                </Link>
-              </li>
+              {destinationLinks.map((destination, index) => (
+                <li key={index}>
+                  <Link 
+                    to={destination.url} 
+                    className="text-gray-600 hover:text-blue-600 transition-colors"
+                  >
+                    {destination.name}
+                  </Link>
+                </li>
+              ))}
               <li>
                 <Link to="/destinations" className="text-blue-600 font-medium">
                   View All Destinations
