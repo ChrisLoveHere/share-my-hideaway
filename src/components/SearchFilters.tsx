@@ -1,7 +1,7 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Filter, ChevronDown } from 'lucide-react';
+import { Search, Filter, ChevronDown, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -18,12 +18,36 @@ import {
 } from "@/components/ui/popover";
 import { Checkbox } from '@/components/ui/checkbox';
 
+// Popular destinations and resorts for autocomplete
+const popularLocations = [
+  { name: "Orlando, Florida", type: "destination" },
+  { name: "Las Vegas, Nevada", type: "destination" },
+  { name: "Maui, Hawaii", type: "destination" },
+  { name: "Cancun, Mexico", type: "destination" },
+  { name: "Myrtle Beach, South Carolina", type: "destination" },
+  { name: "Palm Beach, Florida", type: "destination" },
+  { name: "Cabo San Lucas, Mexico", type: "destination" },
+  { name: "Hilton Head, South Carolina", type: "destination" },
+  { name: "Vail, Colorado", type: "destination" },
+  { name: "Marriott's Maui Ocean Club", type: "resort" },
+  { name: "Hilton Vacation Club Ka'anapali Beach", type: "resort" },
+  { name: "Marriott's Grande Vista", type: "resort" },
+  { name: "Marriott's Ocean Pointe", type: "resort" },
+  { name: "Hyatt Residence Club Maui", type: "resort" },
+  { name: "Club Wyndham Bonnet Creek", type: "resort" },
+  { name: "Vacation Village at Parkway", type: "resort" },
+  { name: "Holiday Inn Club Vacations", type: "resort" }
+];
+
 const SearchFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [filtersExpanded, setFiltersExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [bedrooms, setBedrooms] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredLocations, setFilteredLocations] = useState(popularLocations);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
   
   // Load initial values from URL parameters
   useEffect(() => {
@@ -36,6 +60,30 @@ const SearchFilters = () => {
     const beds = searchParams.get('bedrooms') || '';
     setBedrooms(beds);
   }, [searchParams]);
+  
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = popularLocations.filter(location => 
+        location.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setFilteredLocations(filtered);
+    } else {
+      setFilteredLocations(popularLocations);
+    }
+  }, [searchTerm]);
+  
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   
   const handleSearch = () => {
     const newParams = new URLSearchParams(searchParams);
@@ -62,18 +110,59 @@ const SearchFilters = () => {
     setSearchParams(newParams);
   };
   
+  const handleSelectLocation = (value: string) => {
+    setSearchTerm(value);
+    setShowSuggestions(false);
+  };
+  
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-subtle p-4">
       <div className="flex flex-col lg:flex-row gap-4">
         <div className="flex-grow">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <Input 
               placeholder="Search resorts, locations, keywords" 
               className="pl-10 h-12 border-gray-200 focus:border-blue-400 focus:ring-blue-400"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setShowSuggestions(true);
+              }}
+              onFocus={() => setShowSuggestions(true)}
             />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            
+            {showSuggestions && (
+              <div 
+                ref={suggestionsRef}
+                className="absolute z-50 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto"
+              >
+                {filteredLocations.length > 0 ? (
+                  <div className="py-1">
+                    {filteredLocations.map((location, index) => (
+                      <div 
+                        key={index} 
+                        className="px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer flex items-center"
+                        onClick={() => handleSelectLocation(location.name)}
+                      >
+                        {location.type === 'destination' ? 
+                          <MapPin className="h-4 w-4 mr-2 text-blue-500" /> : 
+                          <div className="h-4 w-4 mr-2 rounded-full bg-teal-500"></div>
+                        }
+                        <div className="flex flex-col">
+                          <span className="font-medium">{location.name}</span>
+                          <span className="text-xs text-gray-500">
+                            {location.type === 'destination' ? 'Destination' : 'Resort'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="px-4 py-2 text-sm text-gray-500">No results found</div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Calendar, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,28 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+
+// Popular destinations and resorts for autocomplete
+const popularLocations = [
+  { name: "Orlando, Florida", type: "destination" },
+  { name: "Las Vegas, Nevada", type: "destination" },
+  { name: "Maui, Hawaii", type: "destination" },
+  { name: "Cancun, Mexico", type: "destination" },
+  { name: "Myrtle Beach, South Carolina", type: "destination" },
+  { name: "Palm Beach, Florida", type: "destination" },
+  { name: "Cabo San Lucas, Mexico", type: "destination" },
+  { name: "Hilton Head, South Carolina", type: "destination" },
+  { name: "Vail, Colorado", type: "destination" },
+  { name: "Marriott's Maui Ocean Club", type: "resort" },
+  { name: "Hilton Vacation Club Ka'anapali Beach", type: "resort" },
+  { name: "Marriott's Grande Vista", type: "resort" },
+  { name: "Marriott's Ocean Pointe", type: "resort" },
+  { name: "Hyatt Residence Club Maui", type: "resort" },
+  { name: "Club Wyndham Bonnet Creek", type: "resort" },
+  { name: "Vacation Village at Parkway", type: "resort" },
+  { name: "Holiday Inn Club Vacations", type: "resort" }
+];
 
 interface HeroProps {
   className?: string;
@@ -18,6 +40,19 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [destination, setDestination] = useState<string>('');
   const [guests, setGuests] = useState<string>('1');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredLocations, setFilteredLocations] = useState(popularLocations);
+  
+  useEffect(() => {
+    if (destination) {
+      const filtered = popularLocations.filter(location => 
+        location.name.toLowerCase().includes(destination.toLowerCase())
+      );
+      setFilteredLocations(filtered);
+    } else {
+      setFilteredLocations(popularLocations);
+    }
+  }, [destination]);
   
   const handleSearch = () => {
     const searchParams = new URLSearchParams();
@@ -35,6 +70,11 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
     }
     
     navigate(`/search?${searchParams.toString()}`);
+  };
+
+  const handleSelectLocation = (value: string) => {
+    setDestination(value);
+    setShowSuggestions(false);
   };
   
   return (
@@ -73,17 +113,52 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
             Buy, sell or rent timeshares at the best prices on the marketplace trusted by millions.
           </p>
           
-          {/* Search Form - Updated to make it functional */}
+          {/* Search Form with Autocomplete */}
           <div className="max-w-4xl mx-auto bg-white/10 backdrop-blur-xl rounded-2xl p-4 shadow-2xl animate-fade-up" style={{ animationDelay: "0.2s" }}>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
               <div className="relative">
-                <Input 
-                  className="pl-10 h-14 text-base rounded-full border-0 bg-white/90 focus-visible:ring-1 ring-blue-400 shadow-sm text-gray-800 placeholder:text-gray-500" 
-                  placeholder="Destination" 
-                  value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
-                />
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <div className="relative">
+                  <Input 
+                    className="pl-10 h-14 text-base rounded-full border-0 bg-white/90 focus-visible:ring-1 ring-blue-400 shadow-sm text-gray-800 placeholder:text-gray-500" 
+                    placeholder="Destination or Resort" 
+                    value={destination}
+                    onChange={(e) => {
+                      setDestination(e.target.value);
+                      setShowSuggestions(true);
+                    }}
+                    onFocus={() => setShowSuggestions(true)}
+                  />
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                </div>
+                
+                {showSuggestions && (
+                  <div className="absolute z-10 w-full mt-1 bg-white rounded-md shadow-lg max-h-60 overflow-auto">
+                    {filteredLocations.length > 0 ? (
+                      <div className="py-1">
+                        {filteredLocations.map((location, index) => (
+                          <div 
+                            key={index} 
+                            className="px-4 py-2 text-sm hover:bg-blue-50 cursor-pointer flex items-center"
+                            onClick={() => handleSelectLocation(location.name)}
+                          >
+                            {location.type === 'destination' ? 
+                              <MapPin className="h-4 w-4 mr-2 text-blue-500" /> : 
+                              <div className="h-4 w-4 mr-2 rounded-full bg-teal-500"></div>
+                            }
+                            <div className="flex flex-col">
+                              <span className="font-medium">{location.name}</span>
+                              <span className="text-xs text-gray-500">
+                                {location.type === 'destination' ? 'Destination' : 'Resort'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="px-4 py-2 text-sm text-gray-500">No results found</div>
+                    )}
+                  </div>
+                )}
               </div>
               
               <Popover>
@@ -132,13 +207,13 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
             </div>
           </div>
           
-          {/* Search tags buttons */}
+          {/* Search tags buttons - updated to white bg with black text */}
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             {['For Sale', 'For Rent', 'New Listings', 'Popular'].map((tag, index) => (
               <Button 
                 key={index}
                 variant="outline" 
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border-white/20 hover:border-white/30 rounded-full px-8 py-6 text-base font-medium animate-fade-up"
+                className="bg-white hover:bg-gray-100 text-gray-800 border-gray-200 hover:border-gray-300 rounded-full px-8 py-6 text-base font-medium animate-fade-up"
                 style={{ animationDelay: `${0.3 + index * 0.1}s` }}
                 onClick={() => navigate(`/search?tag=${tag.toLowerCase().replace(' ', '-')}`)}
               >
@@ -147,7 +222,7 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
             ))}
           </div>
           
-          {/* Stats bar */}
+          {/* Stats bar - updated for better visibility */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 animate-fade-up" style={{ animationDelay: "0.6s" }}>
             {[
               { label: 'Properties', value: '75,000+' },
@@ -155,11 +230,11 @@ const Hero: React.FC<HeroProps> = ({ className }) => {
               { label: 'Happy Customers', value: '25,000+' },
               { label: 'Years of Service', value: '15+' }
             ].map((stat, index) => (
-              <div key={index} className="text-center glass px-2 py-4 rounded-lg backdrop-blur-md bg-white/5">
-                <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-300 to-teal-300">
+              <div key={index} className="text-center glass px-2 py-4 rounded-lg backdrop-blur-md bg-white/25">
+                <p className="text-3xl font-bold text-white">
                   {stat.value}
                 </p>
-                <p className="text-white/80 text-sm">{stat.label}</p>
+                <p className="text-white font-medium">{stat.label}</p>
               </div>
             ))}
           </div>
