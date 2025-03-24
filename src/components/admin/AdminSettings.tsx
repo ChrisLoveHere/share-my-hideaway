@@ -18,10 +18,11 @@ const AdminSettings = () => {
     try {
       setSubmitting(true);
       
-      // Call the RPC function to make user an admin
+      // Call the stored procedure to make user an admin
+      // Use rpc with any type to bypass TypeScript checking for the procedure name
       const { error } = await supabase.rpc('make_admin', {
         email_address: newAdminEmail
-      });
+      } as any);
       
       if (error) throw error;
       
