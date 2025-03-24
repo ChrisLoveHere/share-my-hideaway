@@ -101,6 +101,9 @@ const PropertyListing = () => {
         images: uploadedImages,
         image_url: uploadedImages.length > 0 ? uploadedImages[0] : null,
         seller_id: user.id,
+        // Convert Date objects to ISO strings for the database
+        availability_start_date: data.availability_start_date ? data.availability_start_date.toISOString() : null,
+        availability_end_date: data.availability_end_date ? data.availability_end_date.toISOString() : null,
       };
       
       // Insert the property

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -160,6 +161,9 @@ const EditProperty = () => {
         amenities,
         images: uploadedImages,
         image_url: uploadedImages.length > 0 ? uploadedImages[0] : null,
+        // Convert Date objects to ISO strings for the database
+        availability_start_date: data.availability_start_date ? data.availability_start_date.toISOString() : null,
+        availability_end_date: data.availability_end_date ? data.availability_end_date.toISOString() : null,
       };
       
       // Update the property
