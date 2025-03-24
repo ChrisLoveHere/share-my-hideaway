@@ -71,6 +71,30 @@ const Navbar = () => {
                 </Link>
               </NavigationMenuItem>
               
+              <NavigationMenuItem>
+                <Link to="/resources" className={`text-sm font-medium hover:text-blue-600 transition-colors ${
+                  scrolled || !isHomepage ? 'text-gray-800' : 'text-white'
+                }`}>
+                  Resources
+                </Link>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <Link to="/about-us" className={`text-sm font-medium hover:text-blue-600 transition-colors ${
+                  scrolled || !isHomepage ? 'text-gray-800' : 'text-white'
+                }`}>
+                  About Us
+                </Link>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <Link to="/contact-us" className={`text-sm font-medium hover:text-blue-600 transition-colors ${
+                  scrolled || !isHomepage ? 'text-gray-800' : 'text-white'
+                }`}>
+                  Contact
+                </Link>
+              </NavigationMenuItem>
+              
               {user && (
                 <>
                   <NavigationMenuItem>
@@ -177,6 +201,30 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
             >
               Find Timeshares
+            </Link>
+            
+            <Link 
+              to="/resources" 
+              className="text-gray-800 py-2 border-b border-gray-100"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Resources
+            </Link>
+            
+            <Link 
+              to="/about-us" 
+              className="text-gray-800 py-2 border-b border-gray-100"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              About Us
+            </Link>
+            
+            <Link 
+              to="/contact-us" 
+              className="text-gray-800 py-2 border-b border-gray-100"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Contact
             </Link>
             
             {user ? (
