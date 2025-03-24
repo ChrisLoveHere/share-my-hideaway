@@ -122,11 +122,15 @@ export type Database = {
       timeshare_properties: {
         Row: {
           amenities: string[] | null
+          availability_end_date: string | null
+          availability_start_date: string | null
           bathrooms: number
           bedrooms: number
           created_at: string
           description: string | null
           featured: boolean | null
+          for_rent: boolean | null
+          for_sale: boolean | null
           id: string
           image_url: string | null
           images: string[] | null
@@ -134,6 +138,7 @@ export type Database = {
           location: string
           maintenance_fee: number | null
           ownership_type: string | null
+          points: number | null
           price: number
           rental_price: number | null
           resort_id: string | null
@@ -146,11 +151,15 @@ export type Database = {
         }
         Insert: {
           amenities?: string[] | null
+          availability_end_date?: string | null
+          availability_start_date?: string | null
           bathrooms: number
           bedrooms: number
           created_at?: string
           description?: string | null
           featured?: boolean | null
+          for_rent?: boolean | null
+          for_sale?: boolean | null
           id?: string
           image_url?: string | null
           images?: string[] | null
@@ -158,6 +167,7 @@ export type Database = {
           location: string
           maintenance_fee?: number | null
           ownership_type?: string | null
+          points?: number | null
           price: number
           rental_price?: number | null
           resort_id?: string | null
@@ -170,11 +180,15 @@ export type Database = {
         }
         Update: {
           amenities?: string[] | null
+          availability_end_date?: string | null
+          availability_start_date?: string | null
           bathrooms?: number
           bedrooms?: number
           created_at?: string
           description?: string | null
           featured?: boolean | null
+          for_rent?: boolean | null
+          for_sale?: boolean | null
           id?: string
           image_url?: string | null
           images?: string[] | null
@@ -182,6 +196,7 @@ export type Database = {
           location?: string
           maintenance_fee?: number | null
           ownership_type?: string | null
+          points?: number | null
           price?: number
           rental_price?: number | null
           resort_id?: string | null

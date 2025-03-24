@@ -1,45 +1,51 @@
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Toaster } from 'sonner';
+import { AuthProvider } from './hooks/useAuth';
+import { ThemeProvider } from 'next-themes';
+import Index from './pages/Index';
+import Auth from './pages/Auth';
+import Search from './pages/Search';
+import Location from './pages/Location';
+import Resort from './pages/Resort';
+import Listing from './pages/Listing';
+import NotFound from './pages/NotFound';
+import Admin from './pages/Admin';
+import Profile from './pages/Profile';
+import PropertyListing from './pages/PropertyListing';
+import MyProperties from './pages/MyProperties';
+import EditProperty from './pages/EditProperty';
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "./hooks/useAuth";
-import Index from "./pages/Index";
-import Search from "./pages/Search";
-import Listing from "./pages/Listing";
-import Auth from "./pages/Auth";
-import Profile from "./pages/Profile";
-import NotFound from "./pages/NotFound";
-import Location from "./pages/Location";
-import Resort from "./pages/Resort";
-import Admin from "./pages/Admin";
+import './App.css';
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/listing/:id" element={<Listing />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/location/:slug" element={<Location />} />
-            <Route path="/resort/:id" element={<Resort />} />
-            <Route path="/admin" element={<Admin />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider attribute="class" defaultTheme="light">
+        <AuthProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/location/:slug" element={<Location />} />
+              <Route path="/resort/:id" element={<Resort />} />
+              <Route path="/listing/:id" element={<Listing />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/property-listing" element={<PropertyListing />} />
+              <Route path="/my-properties" element={<MyProperties />} />
+              <Route path="/edit-property/:id" element={<EditProperty />} />
+              <Route path="/admin/*" element={<Admin />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+          <Toaster position="top-right" />
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
 
 export default App;
