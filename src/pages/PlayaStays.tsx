@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Building2, TreePalm, ExternalLink, Sparkles, ShieldCheck, KeyRound } from 'lucide-react';
+import { ArrowRight, Building2, TreePalm, ExternalLink, Sparkles, ShieldCheck, KeyRound, User } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -173,7 +173,30 @@ const PlayaStays = () => {
           <ArrowRight className="h-8 w-8" />
         </a>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2">
+        <div className="mt-12 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 p-6 ring-1 ring-amber-100">
+          <div className="flex items-start gap-4">
+            <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-amber-600 text-white shadow">
+              <User className="h-7 w-7" />
+            </div>
+            <div className="flex-1">
+              <div className="text-xs uppercase tracking-wider text-amber-700">Meet the founder</div>
+              <h3 className="mt-1 text-xl font-bold text-gray-900">Chris Love</h3>
+              <p className="mt-2 text-gray-700">
+                PlayaStays is run by Chris Love — a Playa del Carmen-based property manager with a
+                background in hospitality and technology. Read his full profile to see who is
+                actually answering the phone when you call.
+              </p>
+              <Link
+                to="/property-manager/chris-love"
+                className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-amber-700 hover:underline"
+              >
+                View Chris Love's profile <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
           <Link
             to="/condos-playa-del-carmen"
             className="group flex items-center justify-between rounded-xl bg-white p-6 shadow-md ring-1 ring-gray-100 transition hover:shadow-lg"

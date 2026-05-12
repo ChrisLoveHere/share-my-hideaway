@@ -20,6 +20,11 @@ import PlacesToEatPlayaDelCarmen from './pages/PlacesToEatPlayaDelCarmen';
 import ThingsToDoPlayaDelCarmen from './pages/ThingsToDoPlayaDelCarmen';
 import WhereToStayPlayacar from './pages/WhereToStayPlayacar';
 import PlayaStays from './pages/PlayaStays';
+import TimesharesNearPlayaDelCarmen from './pages/TimesharesNearPlayaDelCarmen';
+import TimesharesNearPuertoMorelos from './pages/TimesharesNearPuertoMorelos';
+import TimesharesNearTulum from './pages/TimesharesNearTulum';
+import HiringAPropertyManager from './pages/HiringAPropertyManager';
+import PropertyManagerChrisLove from './pages/PropertyManagerChrisLove';
 
 import './App.css';
 
@@ -48,6 +53,11 @@ function App() {
               <Route path="/things-to-do-playa-del-carmen" element={<ThingsToDoPlayaDelCarmen />} />
               <Route path="/where-to-stay-playacar" element={<WhereToStayPlayacar />} />
               <Route path="/playastays" element={<PlayaStays />} />
+              <Route path="/timeshares-near-playa-del-carmen" element={<TimesharesNearPlayaDelCarmen />} />
+              <Route path="/timeshares-near-puerto-morelos" element={<TimesharesNearPuertoMorelos />} />
+              <Route path="/timeshares-near-tulum" element={<TimesharesNearTulum />} />
+              <Route path="/hiring-a-property-manager" element={<HiringAPropertyManager />} />
+              <Route path="/property-manager/chris-love" element={<PropertyManagerChrisLove />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
