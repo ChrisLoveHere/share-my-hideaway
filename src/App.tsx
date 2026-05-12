@@ -25,6 +25,9 @@ import TimesharesNearPuertoMorelos from './pages/TimesharesNearPuertoMorelos';
 import TimesharesNearTulum from './pages/TimesharesNearTulum';
 import HiringAPropertyManager from './pages/HiringAPropertyManager';
 import PropertyManagerChrisLove from './pages/PropertyManagerChrisLove';
+import NidoStays from './pages/NidoStays';
+import PropertyManagersValladolid from './pages/PropertyManagersValladolid';
+import PropertyManagersMexicoCity from './pages/PropertyManagersMexicoCity';
 
 import './App.css';
 
@@ -58,6 +61,9 @@ function App() {
               <Route path="/timeshares-near-tulum" element={<TimesharesNearTulum />} />
               <Route path="/hiring-a-property-manager" element={<HiringAPropertyManager />} />
               <Route path="/property-manager/chris-love" element={<PropertyManagerChrisLove />} />
+              <Route path="/nido-stays" element={<NidoStays />} />
+              <Route path="/property-managers-valladolid" element={<PropertyManagersValladolid />} />
+              <Route path="/property-managers-mexico-city" element={<PropertyManagersMexicoCity />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
