@@ -15,6 +15,11 @@ import Profile from './pages/Profile';
 import PropertyListing from './pages/PropertyListing';
 import MyProperties from './pages/MyProperties';
 import EditProperty from './pages/EditProperty';
+import CondosPlayaDelCarmen from './pages/CondosPlayaDelCarmen';
+import PlacesToEatPlayaDelCarmen from './pages/PlacesToEatPlayaDelCarmen';
+import ThingsToDoPlayaDelCarmen from './pages/ThingsToDoPlayaDelCarmen';
+import WhereToStayPlayacar from './pages/WhereToStayPlayacar';
+import PlayaStays from './pages/PlayaStays';
 
 import './App.css';
 
@@ -38,6 +43,11 @@ function App() {
               <Route path="/my-properties" element={<MyProperties />} />
               <Route path="/edit-property/:id" element={<EditProperty />} />
               <Route path="/admin/*" element={<Admin />} />
+              <Route path="/condos-playa-del-carmen" element={<CondosPlayaDelCarmen />} />
+              <Route path="/places-to-eat-playa-del-carmen" element={<PlacesToEatPlayaDelCarmen />} />
+              <Route path="/things-to-do-playa-del-carmen" element={<ThingsToDoPlayaDelCarmen />} />
+              <Route path="/where-to-stay-playacar" element={<WhereToStayPlayacar />} />
+              <Route path="/playastays" element={<PlayaStays />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
